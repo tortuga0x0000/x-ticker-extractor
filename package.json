@@ -1,6 +1,6 @@
 {
   "name": "x-ticker-extractor",
-  "version": "0.0.1",
+  "version": "0.0.2-alpha.0",
   "description": "A chrome plugin to scrap the available ticker on a the current X page",
   "main": "dest/index.js",
   "scripts": {
