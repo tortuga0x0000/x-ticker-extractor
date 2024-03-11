@@ -1,0 +1,20 @@
+{
+  "name": "twitter-scraper",
+  "version": "0.0.1",
+  "description": "A chrome plugin to scrap the available ticker on a the current twitter page",
+  "main": "dest/index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "dev": "tsc --watch"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "@types/chrome": "^0.0.263",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.2",
+    "typescript": "^5.4.2"
+  }
+}
