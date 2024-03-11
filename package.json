@@ -1,7 +1,7 @@
 {
-  "name": "twitter-scraper",
+  "name": "x-ticker-extractor",
   "version": "0.0.1",
-  "description": "A chrome plugin to scrap the available ticker on a the current twitter page",
+  "description": "A chrome plugin to scrap the available ticker on a the current X page",
   "main": "dest/index.js",
   "scripts": {
     "build": "tsc",
