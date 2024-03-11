@@ -9,16 +9,19 @@ function getTickersFromPage(targetUsername?: string) {
     .filter(post => !targetUsername || targetUsername === post.querySelector('a[role="link"]')?.getAttribute('href')?.split('/')[1]);
   
   const tickers = posts.flatMap(getTickersFromPost)
-
-  return tickers.reduce<Array<{name: String, count: number}>>(function(arr, ticker) {
-    const existingTicker = arr.find(t => t.name === ticker)
-    if (existingTicker) {
-      existingTicker.count++
-    } else {
-      arr.push({ name: ticker, count: 1})
-    }
-    return arr
-  } , []);
+  console.log(posts)
+  return {
+    tickers: tickers.reduce<Array<{name: String, count: number}>>(function(arr, ticker) {
+      const existingTicker = arr.find(t => t.name === ticker)
+      if (existingTicker) {
+        existingTicker.count++
+      } else {
+        arr.push({ name: ticker, count: 1})
+      }
+      return arr
+    } , []),
+    lastItem: posts[posts.length-1]
+  }
 }
 
 function getTickersFromPost(post: Element) {
@@ -31,8 +34,11 @@ function getTickersFromPost(post: Element) {
       matches.forEach(t => tickers.push(t));
     }
   }
+  console.log(tickers)
   return tickers;
 }
+
+let isScraping = false
 
 /**
  * Actions
@@ -40,16 +46,41 @@ function getTickersFromPost(post: Element) {
  */
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "scrap") {
-    const ul = document.createElement("ul");
-    getTickersFromPage()
-      .sort((a, b) => b.count - a.count)
-      .map(function(ticker) {
-        const li = document.createElement("li");
-        // Use the same styling as the publish information in an article's header
-        li.textContent = `${ticker.name} (${ticker.count})`;
-        ul.appendChild(li)
-      })
+    if (isScraping) {
+      return
+    }
 
+    isScraping = true
+
+    document.onclick = function() {
+      isScraping = false
+
+    }
+
+    const ul = document.createElement("ul");
     document.querySelector("main")?.prepend(ul)
+
+    function op(lastItem?: Element) {
+      lastItem?.scrollIntoView()
+
+      setTimeout(function() {
+        const data = getTickersFromPage()
+        const tickers = data.tickers
+        
+        tickers.push(...getTickersFromPage().tickers)
+        tickers.sort((a, b) => b.count - a.count)
+          .map(function(ticker) {
+            const li = document.createElement("li");
+            // Use the same styling as the publish information in an article's header
+            li.textContent = `${ticker.name} (${ticker.count})`;
+            ul.appendChild(li)
+          })
+        if (isScraping) {
+          op(data.lastItem)
+        }
+      }, 1000)
+    }
+
+    op()
   }
 })
